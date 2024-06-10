@@ -1,0 +1,172 @@
+////////////////////////////////////////////////////////////////////////////////
+// NS stands for Normalizer of Split Cartan
+// t is the rational parameter, and d is the quadratic twist (see overleaf file)
+
+NSCurve := function(t,d)
+D := (t-3)*(t+1)/(2*(t^2+3)*d);
+j := (3*(t+1)*(t-3)/t)^3;
+Q<x,y> := PolynomialRing(Rationals(),2);
+E := EllipticCurve([1,1/4*(1/D-1),0,-36/(D^2*(j-1728)),-1/(D^3*(j-1728))]);
+
+return E;
+end function;
+
+////////////////////////////////////////////////////////////////////////////////
+// Gives the field K = Q(E[3])
+ThreeTorsionField := function(t,d)
+R1<x> := PolynomialRing(Rationals());
+a := 3; b:= t^2-6*t-3;  
+F<A> := NumberField(x^2+3); 
+
+R<y> := PolynomialRing(F);
+L := SplittingField(y^2-b);
+S<z> := PolynomialRing(L);
+B := Roots(z^2-b)[1][1];
+
+c := d*(-1+(t+1)/b*A*B);
+K := SplittingField(z^2-c);
+
+return K;
+end function;
+
+////////////////////////////////////////////////////////////////////////////////
+// Gives Galois Group Gal(K/Q), where K = Q(E[3])
+GiveGalois := function(t,d)
+K := ThreeTorsionField(t,d); 
+K := OptimizedRepresentation(K);
+
+// G = Gal(K/Q), Clk = Cl(K) class group, phi: Clk -> ideals
+G, A, e := AutomorphismGroup(K); 
+return G;
+end function;
+
+////////////////////////////////////////////////////////////////////////////////
+// Find character of element g in G = Gal(K/Q), note; use e(g) to act
+// H is Clk
+// phi = map from Class group to ideals
+// e = map from G to automorphism group
+
+GiveCharacter := function(phi, e, g, H)
+Gens := [phi(h): h in SetToSequence(Generators(H))];
+s := #Gens;
+trace := 0;
+for i := 1 to s do
+for indices in CartesianPower([-1,0,1],s) do
+I := Gens[i];
+indexList := [s:s in TupleToList(indices)];
+if IsPrincipal(e(g)(I)^(-1)*PowerProduct(Gens, indexList)) then
+trace +:= indices[i];
+end if; end for; end for;
+return trace;
+end function;
+
+////////////////////////////////////////////////////////////////////////////////
+// Find list of characters Helper function
+
+GiveAllCharactersHelp := function(phi, e, G, H)
+characters := [];
+for g in G do
+characters := Append(characters,<ClassRepresentative(G,g), GiveCharacter(phi, e, g, H)>);
+end for;
+return characters;
+end function;
+
+////////////////////////////////////////////////////////////////////////////////
+// Find list of ALL characters, given t,d.
+
+GiveAllCharacters := function(t,d)
+// K = Q(E[3])
+K := ThreeTorsionField(t,d); 
+K := OptimizedRepresentation(K);
+
+// G = Gal(K/Q), Clk = Cl(K) class group, phi: Clk -> ideals
+G, A, e := AutomorphismGroup(K); 
+Clk, phi := ClassGroup(K);
+
+// Defining the map x -> 3*x
+threemap := [];
+for c in Generators(Clk) do
+threemap := Append(threemap, <c, 3*c>);
+end for;
+
+// H is Cl(K/Q)[3]
+H := Kernel(hom<Clk->Clk|threemap>);
+
+// prints list of characters
+return GiveAllCharactersHelp(phi, e, G, H);
+end function;
+
+////////////////////////////////////////////////////////////////////////////////
+// Find list of characters for each conjugacy class, given t,d
+// This is what we use to find decomposition
+
+CharacterClassFunction := function(phi, e, G, H)
+representatives := [Id(G), G.1^2, G.2, G.1*G.2, G.1];
+characters := [];
+for g in representatives do
+characters := Append(characters,GiveCharacter(phi, e, g, H));
+end for;
+return characters;
+end function;
+
+////////////////////////////////////////////////////////////////////////////////
+// Find multiplicity of irredcuible character xi in decomposition of xi
+// both x, xi are magma lists
+FindDecompositionMultiplicity := function(G, x, xi)
+sum := x[1]*xi[1] + x[1]*xi[1] + 2*x[1]*xi[1] + 2*x[1]*xi[1] + 2*x[1]*xi[1];
+return sum/(#G);
+end function;
+
+////////////////////////////////////////////////////////////////////////////////
+// Find decomposition in irreducible characters
+// Hard coded for D4
+
+FindDecomposition := function(t,d, print_info)
+// K = Q(E[3])
+K := ThreeTorsionField(t,d); 
+K := OptimizedRepresentation(K);
+
+// G = Gal(K/Q), Clk = Cl(K) class group, phi: Clk -> ideals
+G, A, e := AutomorphismGroup(K); 
+Clk, phi := ClassGroup(K);
+
+// Defining the map x -> 3*x
+threemap := [];
+for c in Generators(Clk) do
+threemap := Append(threemap, <c, 3*c>);
+end for;
+
+// H is Cl(K/Q)[3]
+H := Kernel(hom<Clk->Clk|threemap>);
+
+// If want to print additional information
+if print_info eq 1 then
+print(NSCurve(t,d));
+
+print("Galois Group Gal(K/Q) is");
+print(G);
+end if;
+
+representatives := [Id(G), G.1^2, G.2, G.1*G.2, G.1];
+T := CharacterTable(G);
+// find characters for irred reps as lists
+irreducibleReps := [[T[x][i] : i in [1,2,3,4,5]]: x in [1,2,3,4,5]]; 
+x := CharacterClassFunction(phi, e, G, H);
+multiplicities := [FindDecompositionMultiplicity(G, x, irreducibleReps[i]) : i in [1,2,3,4,5]];
+
+print(T); // print Character Table of D4
+
+print("** Note: Character of our Galois representation is modulo 3, and exponents used to find trace are currenrly are in (-1,0,1)");
+printf "Character is "; print(x);
+
+output := [<i, multiplicities[i]> : i in [1,2,3,4,5]];
+printf "Decomposition "; print(output);
+
+h := hom<Rationals() -> Integers(3) | >; // maps to integer mod 3
+outputmod3 := [<i,h(multiplicities[i])> : i in [1,2,3,4,5]];
+printf "Decomposition mod 3";
+return outputmod3;
+end function;
+
+
+
