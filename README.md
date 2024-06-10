@@ -22,7 +22,7 @@ Here's an overview of the functions used:
 8. $\texttt{FindDecompositionMultiplicity}(G, x, xi)$ returns the multiplicity of the irreducible character $\texttt{xi}$ in the decomposition of $\texttt{xi}.$ Here,
    - $\texttt{xi}$ is a list of characters for the irreducible representation $\chi_i.$
    - $\texttt{x}$ is a list of characters for our representation. This is obtained from $\texttt{CharacterClassFunction}.$
-9. $\texttt{FindDecomposition(t,d, print_info)}$ returns the full decomposition of our representation.
-   - $\texttt{print_info}$ is $1$ if you want to print additional information such as the Elliptic Curve's equation, Galois Groups. It is $0$ otherwise. 
+9. $\texttt{FindDecomposition(t,d, printInfo)}$ returns the full decomposition of our representation.
+   - $\texttt{printInfo}$ is $1$ if you want to print additional information such as the Elliptic Curve's equation, Galois Groups. It is $0$ otherwise. 
 
 
