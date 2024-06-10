@@ -1,8 +1,10 @@
 # Galois-Rep-of-Three-Torsion-of-Class-Group
 ## Mathematical Overview
-Let $E$ be an elliptic curve over $\mathbb{Q}$, and $K = \mathbb{Q}(E[3]).$ Then the Galois action of $G:=\text{Gal}(K/\mathbb{Q})$ on $E[3] \cong \mathbb{Z}/3\mathbb{Z} \times \mathbb{Z}/3\mathbb{Z}$ gives a representation $G \to \text{GL}(2,\mathbb{F}_3).$ Suppose the image is conjugate to the normalizer of split Cartan subgroup, a sub group of order $8$ isomorphic to $D_4.$ Consider the action of $G$ on $\text{Cl}(K)[3],$ i.e. the $3$ torsion part of the class group of $K.$ We want to decompose this action.
+Let $E$ be an elliptic curve over $\mathbb{Q}$, and $K = \mathbb{Q}(E[3]).$ Conside the two $G:=\text{Gal}(K/\mathbb{Q})$ Galois modules $E[3] \cong \mathbb{Z}/3\mathbb{Z} \times \mathbb{Z}/3\mathbb{Z}$ and $\text{Cl}\_{K} := \text{Cl}(K)[3].$ Suppose that the first representation is irreducible. We want to study $\text{Hom}\_{\text{Gal}(K/\mathbb{Q})}(\text{Cl}_K, E[3]).$
 
-Fix $t,d.$ From Zywina's paper and Weston's calculation, the elliptic curve then is
+Suppose the image of $G$ in $G \to \text{GL}_2(\mathbb{F}\_3)$ is conjugate to the normalizer of the split Cartan subgroup, a subgroup of order $8$ isomorphic to $D_4.$ Since $D_4$ has only one two dimensional irreducible representation, say $\chi_5,$ it suffices to find the multiplicity of $\chi_5$ in the decomposition of $\rho.$
+
+Fix $t,d.$ From Zywina's paper and Weston's calculation, the family of elliptic curve we need is
 $$y^2+xy=x^3+\frac{1}{4}\left(\frac{1}{D}-1\right)x^2-\frac{36}{D^2(j-1728)}-\frac{1}{D^3(j-1728)}.$$
 Here, $j=\left(\frac{3(t+1)(t-3)}{t}\right)^3$ and $D=\frac{(t-3)(t+1)}{2(t^2+3)d}.$
 The corresponding field extension is
@@ -23,6 +25,7 @@ Here's an overview of the functions used:
    - $\texttt{xi}$ is a list of characters for the irreducible representation $\chi_i.$
    - $\texttt{x}$ is a list of characters for our representation. This is obtained from $\texttt{CharacterClassFunction}.$
 9. $\texttt{FindDecomposition(t,d, printInfo)}$ returns the full decomposition of our representation.
-   - $\texttt{printInfo}$ is $1$ if you want to print additional information such as the Elliptic Curve's equation, Galois Groups. It is $0$ otherwise. 
+   - $\texttt{printInfo}$ is $1$ if you want to print additional information such as the Elliptic Curve's equation, Galois Groups. It is $0$ otherwise.
+   - The last one is the multiplicity of $\chi_5.$
 
 
