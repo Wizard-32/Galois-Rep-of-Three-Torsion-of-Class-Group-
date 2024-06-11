@@ -61,42 +61,6 @@ return trace;
 end function;
 
 ////////////////////////////////////////////////////////////////////////////////
-// Find list of characters Helper function
-
-GiveAllCharactersHelp := function(phi, e, G, H)
-characters := [];
-for g in G do
-characters := Append(characters,<ClassRepresentative(G,g), GiveCharacter(phi, e, g, H)>);
-end for;
-return characters;
-end function;
-
-////////////////////////////////////////////////////////////////////////////////
-// Find list of ALL characters, given t,d.
-
-GiveAllCharacters := function(t,d)
-// K = Q(E[3])
-K := ThreeTorsionField(t,d); 
-K := OptimizedRepresentation(K);
-
-// G = Gal(K/Q), Clk = Cl(K) class group, phi: Clk -> ideals
-G, A, e := AutomorphismGroup(K); 
-Clk, phi := ClassGroup(K);
-
-// Defining the map x -> 3*x
-threemap := [];
-for c in Generators(Clk) do
-threemap := Append(threemap, <c, 3*c>);
-end for;
-
-// H is Cl(K/Q)[3]
-H := Kernel(hom<Clk->Clk|threemap>);
-
-// prints list of characters
-return GiveAllCharactersHelp(phi, e, G, H);
-end function;
-
-////////////////////////////////////////////////////////////////////////////////
 // Find list of characters for each conjugacy class, given t,d
 // This is what we use to find decomposition
 
